@@ -1,0 +1,87 @@
+---
+title: "Tipos de datos y su representación gráfica - Ejercicios"
+author: "Darío Aícua Ubierna"
+date: "2025-10-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicio 1
+
+### A)
+
+Creamos un gráfico de barras para visualizar los espectadores de cada programa.
+
+
+``` {r}
+# Datos (Semana 1)
+programas <- c("Viva la estadística", "El hermano", "Matanza sangrienta", "Informativo del día")
+sem1_abs  <- c(875, 925, 742, 682)
+
+# Gráfico de barras (frecuencia absoluta)
+op <- par(no.readonly = TRUE)
+par(mar = c(9, 5, 4, 1))  # margen inferior amplio para rotar etiquetas
+
+bp <- barplot(
+  sem1_abs,
+  names.arg = programas,
+  las = 2,                         # etiquetas en vertical
+  ylab = "Espectadores (n)",
+  main = "Semana 1 - Audiencia por programa (frecuencia absoluta)",
+  ylim = c(0, max(sem1_abs) * 1.15)
+)
+
+# Etiquetas numéricas encima de cada barra
+text(x = bp, y = sem1_abs, labels = sem1_abs, pos = 3, cex = 0.9)
+
+par(op)
+```
+
+### B)
+
+Hacemos otro gráfico de barras que muestre ambas semanas para cada programa.
+
+``` {r}
+# Datos
+programas <- c("Viva la estadística", "El hermano", "Matanza sangrienta", "Informativo del día")
+sem1_abs  <- c(875, 925, 742, 682)
+sem2_abs  <- c(100, 200, 100, 682)
+
+# Totales y porcentajes
+total1 <- sum(sem1_abs); total2 <- sum(sem2_abs)
+sem1_pct <- 100 * sem1_abs / total1
+sem2_pct <- 100 * sem2_abs / total2
+
+# Matriz para barplot
+mat_pct <- rbind(sem1_pct, sem2_pct)
+rownames(mat_pct) <- c("Semana 1", "Semana 2")
+colnames(mat_pct) <- programas
+
+# Gráfico de barras agrupadas
+op <- par(no.readonly = TRUE)
+par(mar = c(10, 6, 1, 2))
+
+bp <- barplot(
+  mat_pct, beside = TRUE, las = 2,
+  ylab = "Porcentaje (%)",
+  main = "Comparación de audiencia por programa (porcentajes)",
+  ylim = c(0, 100)
+)
+
+# Líneas de referencia
+abline(h = seq(0, 100, by = 10), lty = 3)
+
+# Etiquetas encima de cada barra
+text(x = bp, y = mat_pct, labels = sprintf("%.2f", mat_pct), pos = 3, cex = 0.9)
+
+# Leyenda
+legend("topright", legend = rownames(mat_pct), bty = "n",
+       fill = gray.colors(nrow(mat_pct)))
+
+par(op)
+
+
+```
