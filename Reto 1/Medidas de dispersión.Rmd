@@ -1,0 +1,147 @@
+---
+title: "Medidas de dispersión"
+author: "Darío Aícua Ubierna"
+date: "2025-10-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicio 1
+
+### A) Números resumen
+
+```{r ejercicio_1_datos}
+# Tiempos en segundos
+doors95 <- c(27, 25, 50, 33, 25, 86, 28, 31, 34, 36, 37, 44, 20, 59, 85)
+doors98 <- c(33, 7, 25, 14, 5, 31, 19, 10, 29, 18)
+
+#Doors95 - Numeros resumen
+
+library(dplyr)
+
+resumen <- data.frame(
+  Sistema = c("Doors95", "Doors98"),
+  Media   = c(mean(doors95), mean(doors98)),
+  Min     = c(min(doors95), min(doors98)),
+  Q1      = c(quantile(doors95, 0.25, type = 2), quantile(doors98, 0.25, type = 2)),
+  Q2      = c(median(doors95), median(doors98)),
+  Q3      = c(quantile(doors95, 0.75, type = 2), quantile(doors98, 0.75, type = 2)),
+  Max     = c(max(doors95), max(doors98))
+)
+
+knitr::kable(resumen, digits = 1,
+             caption = "Medidas descriptivas del tiempo de arranque por sistema operativo")
+
+```
+
+
+### B) Representación gráfica
+
+```{r ejercicio_1_boxplot}
+op <- par(no.readonly = TRUE); par(mar = c(4,5,3,1))
+
+boxplot(
+  doors95, doors98,
+  names = c("Doors95", "Doors98"),
+  col = c("lightblue", "lightgreen"),
+  xlab = "Tiempo de arranque (segundos)",
+  main = "Macrohard Phrase — comparación por sistema operativo",
+  horizontal= TRUE
+)
+
+par(op)
+
+```
+
+### C) Razonamiento
+1. Media y mediana de 98 son aprox. la mitad que en 95.
+1. El mínimo de 95 es superior a la mediana de 98, y el máximo de 98 es inferior a la mediana de 95.
+1. El gráfico de 98 se ve más simétrico que el de 95.
+
+Por lo tanto, podemos afirmar que en general, 98 es más estable, regular y rápido que 95.
+
+## Ejercicio 2
+
+### A) Primer conjunto de datos
+```{r ejercicio_2_A}
+
+datosA <- c(2,3,5,6,10,10,11,19,19,20)
+
+min(datosA)
+max(datosA)
+quantile(datosA, 0.25, type = 2)
+median(datosA)
+quantile(datosA, 0.75, type = 2)
+
+```
+
+### B) Segundo conjunto de datos
+```{r ejercicio_2_B}
+
+datosB <- c(2,3,5,6,10,10,16,19,19,20)
+
+min(datosB)
+max(datosB)
+quantile(datosB, 0.25, type = 2)
+median(datosB)
+quantile(datosB, 0.75, type = 2)
+mean(datosB)
+
+```
+
+### C) Pregunta
+
+No, ya que la media siempre va a ser menor o igual que el máximo, nunca mayor. En este caso el máximo era 20, por lo que una media de 21 no es posible. Se puede comprobar esta afirmación ya que si la media es mayor que el valor máximo, todas las desviaciones van a ser negativas, por lo que la suma de las desviaciones no va a ser 0, y sabemos por las propiedades de la media que eso no puede ser.
+
+## Ejercicio 3
+
+```{r ejercicio_3_tchebichev}
+# Datos (número de cuelgues en 50 ordenadores)
+x50 <- c(
+  0, 9, 12, 14, 19,
+  2, 10, 12, 14, 20,
+  4, 10, 12, 14, 20,
+  5, 10, 12, 15, 21,
+  6, 11, 12, 15, 22,
+  6, 11, 12, 17, 29,
+  6, 11, 12, 17, 29,
+  7, 11, 13, 18, 32,
+  8, 11, 13, 18, 39,
+  9, 12, 14, 19, 39
+)
+
+media <- mean(x50)
+desv  <- sd(x50)
+c(media = media, desviacion_tipica = desv)
+
+media
+desv
+
+m_vals <- c(1, 2, 3)
+teorica <- 1 - 1 / (m_vals^2)
+
+empirica <- sapply(m_vals, function(m) {
+  mean(abs(x50 - media) <= m * desv)
+})
+
+tabla_tchebichev <- data.frame(
+  m = m_vals,
+  Limite_Teorico = round(teorica, 3),
+  Proporcion_Observada = round(empirica, 3)
+)
+
+knitr::kable(tabla_tchebichev,
+             caption = "Comprobación de la regla de Tchebichev para m = 1, 2, 3")
+
+for (i in seq_along(m_vals)) {
+  cat(sprintf(
+    "Para m = %d: límite teórico = %.3f, proporción observada = %.3f → %s\n",
+    m_vals[i], teorica[i], empirica[i],
+    if (empirica[i] >= teorica[i]) "✔️ Se cumple la desigualdad" else "❌ No se cumple"
+  ))
+}
+
+```
