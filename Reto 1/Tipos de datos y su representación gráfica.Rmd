@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Creamos un gráfico de barras para visualizar los espectadores de cada programa.
 
 
-``` {r}
+```{r}
 # Datos (Semana 1)
 programas <- c("Viva la estadística", "El hermano", "Matanza sangrienta", "Informativo del día")
 sem1_abs  <- c(875, 925, 742, 682)
@@ -44,7 +44,7 @@ par(op)
 
 Hacemos otro gráfico de barras que muestre ambas semanas para cada programa.
 
-``` {r}
+```{r}
 # Datos
 programas <- c("Viva la estadística", "El hermano", "Matanza sangrienta", "Informativo del día")
 sem1_abs  <- c(875, 925, 742, 682)
@@ -83,5 +83,138 @@ legend("topright", legend = rownames(mat_pct), bty = "n",
 
 par(op)
 
+
+```
+
+## Ejercicio 2
+
+Representamos como gráfico de barras las frecuencias de cuelgues en el programa. En este caso he escogido el diagrama de tallos y hojas, y el diagrama de puntos:
+
+```{r}
+
+# Datos (cuelgues)
+cuelgues  <- c(47,23,28,0,11,12,35,36,40,30,37,14)
+length(cuelgues)
+range(cuelgues)
+sort(cuelgues)
+
+#Diagrama de tallos y hojas
+stem(cuelgues)
+
+#Diagrama de puntos
+op <- par(no.readonly = TRUE)
+par(mar = c(4, 4, 2, 1))
+
+# Eje con marcas en el rango observado
+plot(
+  cuelgues, rep(1, length(cuelgues)),                             # y constante para una “línea” de puntos
+  xlab = "Nº de cuelgues en el mes", ylab = "", yaxt = "n",
+  main = "Diagrama de puntos",
+  pch = 19, cex = 1.1, xlim = range(cuelgues) + c(-1, 1)
+)
+abline(h = 1, lty = 3)  # guía visual
+
+par(op)
+
+
+```
+## Ejercicio 3
+
+Representamos la tabla de frecuencias:
+
+```{r}
+# Datos (50 ordenadores; nº de cuelgues en un mes)
+x50 <- c(
+  0,  9, 12, 14, 19,
+  2, 10, 12, 14, 20,
+  4, 10, 12, 14, 20,
+  5, 10, 12, 15, 21,
+  6, 11, 12, 15, 22,
+  6, 11, 12, 17, 29,
+  6, 11, 12, 17, 29,
+  7, 11, 13, 18, 32,
+  8, 11, 13, 18, 39,
+  9, 12, 14, 19, 39
+)
+
+length(x50)           # deben ser 50
+range(x50)            # rango observado
+
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+# Definimos cortes (breaks) de 0 a 40 cada 4 (intervalos [a,b), right = FALSE)
+breaks <- seq(0, 40, by = 4)
+
+# Cortamos, contamos y calculamos frecuencias
+clases <- cut(x50, breaks = breaks, right = FALSE, include.lowest = TRUE)
+tab_abs <- as.data.frame(table(clases)) |>
+  dplyr::rename(Intervalo = clases, ni = Freq)
+
+N  <- length(x50)
+fi <- tab_abs$ni / N
+Ni <- cumsum(tab_abs$ni)
+Fi <- cumsum(fi)
+
+tabla_freq <- tab_abs |>
+  dplyr::mutate(
+    fi  = round(fi, 2),
+    Ni  = Ni,
+    Fi  = round(Fi, 2)
+  )
+
+kable(
+  tabla_freq,
+  align = "lrrrr",
+  caption = "Distribución de frecuencias por clases de ancho 4"
+)
+
+```
+
+Ahora representamos en un histograma las frecuencias absolutas para visualizarlas:
+
+```{r}
+op <- par(no.readonly = TRUE)
+par(mar = c(5, 5, 3, 1))
+
+hist(x50,
+     breaks = breaks, right = FALSE,
+     freq = TRUE,                        # usar absolutas
+     main  = "Histograma (frecuencias absolutas)",
+     xlab  = "Número de cuelgues",
+     ylab  = "Frecuencia absoluta (ni)")
+
+# Para mostrar alturas en términos de fi (no densidad), dibujamos barras manuales:
+# calculamos altura relativa por clase: fi / ancho *para densidad*; pero mostramos rejilla
+abline(h = pretty(par("yaxp")[1:2]), lty = 3, col = "gray")
+
+
+par(op)
+
+```
+
+Por ultimo representamos el histograma de frecuencias relativas acumuladas:
+
+```{r}
+
+op <- par(no.readonly = TRUE)
+
+par(mar = c(9, 5, 3, 1))
+
+labels_interv <- paste0("[", head(breaks, -1), ",", tail(breaks, -1), ")")
+
+bp <- barplot(
+  height = tabla_freq$Fi,
+  names.arg = labels_interv, las = 2,
+  ylab = "Frecuencia relativa acumulada (Fi)",
+  main = "Histograma de frecuencias relativas acumuladas",
+  ylim = c(0, 1.15)
+)
+
+text(bp, tabla_freq$Fi, labels = sprintf("%.2f", tabla_freq$Fi), pos = 3, cex = 0.9)
+abline(h = c(0.5, 1.0), lty = 2, col = "gray40")  # guías al 50% y 100%
+
+par(op)
 
 ```
