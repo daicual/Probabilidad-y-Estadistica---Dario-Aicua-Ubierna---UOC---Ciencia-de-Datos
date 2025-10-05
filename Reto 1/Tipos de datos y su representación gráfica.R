@@ -4,12 +4,28 @@
 ## b) Comparación con semana 2 (usar porcentajes para comparar)
 ## Base R, sin paquetes externos. Genera PNGs y muestra en pantalla.
 ## ============================================================
-
+# Función auxiliar para etiquetas encima de barras
+add_bar_labels <- function(bp, heights, offset = 0.02, fmt = "%.0f") {
+  # bp devuelve posiciones x intermedias
+  text(x = bp, y = heights + max(heights) * offset,
+       labels = sprintf(fmt, heights), xpd = TRUE)
+}
 # --- Datos (del enunciado) ---
 programas <- c("Viva la estadística","El hermano","Matanza sangrienta","Informativo del día")
 
-sem1_abs <- c(875, 925, 742, 682)  # Semana 1
-sem2_abs <- c(100, 200, 100, 682)  # Semana 2
+espectadores <- c(875, 925, 742, 682)  # Semana 1
+
+# --- 1) Barras Semana 1 (frecuencia ABSOLUTA) ---
+png("ej1_semana1_barras_absolutas.png", width = 1100, height = 700, res = 140)
+par(mar = c(10, 5, 4, 2))
+bp1 <- barplot(
+  sem1_abs, names.arg = programas, las = 2,
+  ylab = "Espectadores (n)",
+  main = "Semana 1 - Audiencia por programa (frecuencia absoluta)"
+)
+grid(nx = NA, ny = NULL)
+add_bar_labels(bp1, sem1_abs, fmt = "%.0f")
+dev.off()
 
 # --- Totales y porcentajes ---
 total1 <- sum(sem1_abs)
@@ -143,3 +159,4 @@ cat("Archivos generados:\n",
     "- ej1_semana1_sectores.png\n",
     "- ej1_comparacion_barras_porcentaje.png\n",
     "- ej1_comparacion_sectores.png\n", sep = "")
+

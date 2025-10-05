@@ -1,0 +1,127 @@
+---
+title: "Medidas de centro y propiedades"
+author: "Darío Aícua Ubierna"
+date: "2025-10-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicio 1
+
+### 0)
+
+```{r datos}
+# Vector de sueldos (€)
+sueldos <- c(1150,1200,1300,1450,1000,1350,1900,1230,1450,1010,1500,1450)
+```
+
+Sueldo medio:
+
+```{r calculo_sueldo_medio}
+mean(sueldos)
+```
+
+Mediana de los sueldos:
+
+```{r calculo_mediana_sueldos}
+median(sueldos)
+```
+
+Ahora veamos que pasa con estas medidas si por las transformamos de las siguientes maneras:
+
+### A)
+Se le suma a cada sueldo la constante K. La media debería aumentar en K también. la mediana lo mismo.
+
+```{r transformación_K}
+K <- 200
+mediaK <- mean(sueldos+K)
+medianaK <- median(sueldos+K)
+
+mediaK;medianaK
+
+```
+Vemos que las propiedades se cumplen.
+
+### B)
+Se multiplica cada sueldo por un factor (1+J) con J = 0.12 (subida del 12%).La media y la mediana deberían multiplicarse por (1+J).
+
+```{r transformación_J}
+J <- 0.12
+mediaJ <- mean(sueldos*J)
+medianaJ <- median(sueldos*J)
+
+mediaJ;medianaJ
+
+```
+Vemos que las propiedades se cumplen.
+
+
+### B)
+Subir 100 € a UNA persona (máximo / mínimo / cualquiera)
+
+```{r transformación_unica}
+aumento <- 100
+#Detectamos el maximo, el minimo y seleccionamos al cualquiera
+i_max <- which.max(sueldos)
+i_min <- which.min(sueldos)
+i_any <- 6  # cualquiera
+#Calculamos las medias con cada transformación:
+media_max <- mean(replace(sueldos, i_max, sueldos[i_max] + aumento))
+media_min <- mean(replace(sueldos, i_min, sueldos[i_min] + aumento))
+media_any <- mean(replace(sueldos, i_any, sueldos[i_any] + aumento))
+media_max;media_min;media_any;
+
+#Calculamos las medianas con cada transformación:
+median_max <- median(replace(sueldos, i_max, sueldos[i_max] + aumento))
+median_min <- median(replace(sueldos, i_min, sueldos[i_min] + aumento))
+median_any <- median(replace(sueldos, i_any, sueldos[i_any] + aumento))
+median_max;median_min;median_any
+
+```
+Vemos que la media aumenta siempre en el aumento/N. La mediana solo está afectada si el elemento o elementos centrales son modificados
+
+## Ejercicio 2
+
+### A)
+
+Calculo de la media
+
+```{r ejercicio_2_media}
+# Clases (minutos/semana) y frecuencias relativas
+breaks <- c(0, 10, 30, 200, 400)       # límites de clase
+fi     <- c(0.01, 0.15, 0.44, 0.40)    # proporciones por clase (suman 1)
+
+# Marcas de clase
+mids <- (head(breaks, -1) + tail(breaks, -1)) / 2
+
+# Media de datos agrupados: sum(fi * marca)
+media_chat <- sum(fi * mids)
+media_chat
+```
+
+Generamos histograma:
+```{r ejercicio_2_histograma}
+op <- par(no.readonly = TRUE); par(mar = c(5,5,3,1))
+
+widths  <- diff(breaks)
+heights <- fi / widths          # densidad = fi / ancho
+
+plot(0, 0, type = "n",
+     xlim = range(breaks), ylim = c(0, max(heights) * 1.25),
+     xlab = "Tiempo semanal en chats (min)", ylab = "Densidad",
+     main = "Histograma de densidad (clases de ancho desigual)")
+
+for (i in seq_along(heights)) {
+  rect(breaks[i], 0, breaks[i+1], heights[i],
+       col = "gray85", border = "gray30")
+  text(x = (breaks[i]+breaks[i+1])/2,
+       y = heights[i]+0.0005,
+       labels = sprintf("fi=%.2f", fi[i]), cex = 0.8)
+}
+abline(h = pretty(par("yaxp")[1:2]), lty = 3, col = "gray70")
+
+par(op)
+```
