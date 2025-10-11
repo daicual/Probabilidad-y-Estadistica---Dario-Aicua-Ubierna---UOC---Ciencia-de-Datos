@@ -1,0 +1,198 @@
+---
+title: "PEC 1"
+author: "UOC"
+output: html_document
+---
+
+# NOMBRE: Darío Aícua Ubierna
+
+# Introducción
+
+El fichero para realizar la PEC 1 es *“data_pac1”* y lo encontraréis en formato csv. Esta base de datos contiene información relacionada con el rendimiento de los estudiantes de un colegio. Incluye información fundamental, como la identificación de los alumnos, su sexo, edad, curso y puntuaciones en asignaturas clave como matemáticas.
+
+Las variables que se encuentran en el dataset son las siguientes:
+
+- *Student_ID* Identificador único de cada estudiante.
+- *Age:* Edad del estudiante.
+- *Gender:* El sexo del estudiante.
+- *Math_Score:* La puntuación del estudiante en matemáticas.
+- *Science_Score:* La puntuación del estudiante en ciencias.
+- *English_Score:* La puntuación del estudiante en inglés.
+- *Attendance_Rate:* La tasa de asistencia que el estudiante estuvo presente en la escuela durante el curso académico.
+- *Participation:* Nivel de implicación del estudiante en actividades académicas o del curso
+- *Grade_Level:* Etapa educativa del estudiante.
+
+Os puede ser útil consultar el siguiente material:
+
+- Manuales de R
+- Actividades Resueltas del Reto 1 (Estadística Descriptiva y Muestreo)
+
+Hay que entregar la práctica en fichero pdf o html. Se recomienda generar el informe con Rmarkdown que genera automáticamente el html/pdf a entregar. Se puede utilizar el fichero .Rmd, que disponéis en la PEC, como plantilla para resolver los ejercicios.
+
+**Esta PEC debe realizarse de forma estrictamente individual, quedando del todo prohibido el uso de herramientas de IA**. Cualquier indicio de copia será penalizado con un suspenso (D) por todas las partes implicadas y la posible evaluación negativa de la asignatura de forma íntegra.
+
+
+```{r,eval=TRUE,echo=FALSE}
+data_pac1<-read.csv("data_pac1.csv", sep=",", stringsAsFactors=TRUE)
+```
+
+\newpage 
+
+# Pregunta 1 (resolver con R). (4 puntos). 
+
+Cierta empresa, sin preparación académica ninguna, ha usado el dataset proporcionado para analizar los datos y ver la preparación de los estudiantes, para así ofrecer servicios de "Aprueba al instante" en la página Milestafas.net.
+
+
+a) ¿De qué tipo es la variable *Gender*? Haga su resumen numérico (1 punto).
+
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+  #Tipo de variable Gender
+str(data_pac1$Gender)
+
+```
+  R retorna que se trata de una variable de tipo Factor, es decir, cualitativa. También nos dice que en esta variable, sólo hay 2 factores: "Male" y "Female".
+```{r,eval=TRUE,echo=TRUE}
+#Resumen numérico
+  #Tabla de frecuencias absolutas
+table(data_pac1$Gender)
+  #Tabla de frecuencias relativas
+prop.table(table(data_pac1$Gender))
+
+```
+
+
+b) Realice un diagrama de cajas para visualizar la distribución de las notas de matemáticas (variable *Math_Score*) según la variable *Participation*. Comente la respuesta. (1 punto).
+
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+#Boxplot de Math_Score según Participation
+
+#Creamos un dataframe a partir del fichero solamente con los registros que contengan información en MathScore y en Participation
+df <- subset(data_pac1, !is.na(Math_Score) & !is.na(Participation))
+
+#A partir del dataframe anterior, visualiza MathScore por Participation en un boxplot
+boxplot(Math_Score ~ Participation, data = df,
+        main = "Distribución de Math_Score por Participation",
+        xlab = "Participation", ylab = "Math_Score",
+        col = "lightblue", border = "gray30")
+
+```
+
+El diagrama muestra que la participación del alumno no es determinante para la nota. Las medianas (Q2) de los 3 grupos son similares (entre 60 y 70). La única relación las notas de los alumnos se concentran más en torno a Q2 cuanto más alta es su participación.
+
+c) Encontrad los resúmenes numéricos de la variable *Math_Score* según la participación en clase (variable *Participation*). (2 puntos).
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+# Aplicamos summary() de Math_Score por Participation
+by(df$Math_Score, df$Participation, summary)
+
+```
+
+
+
+\newpage
+
+# Pregunta 2 (resolver con R). (3 puntos).
+
+La empresa quiere ofrecer un servicio de “especialidad en sacar sobresalientes en matemáticas con 1 h de estudio". Usando los datos de la variable "Math_Score", conteste a las siguientes preguntas:
+
+a) Haga un diagrama de tallo y hojas en formato decenas y unidades. (1 punto).
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+#Generamos un diagrama de tallo y hojas de Math_Score con stem(). scale controla el nº de filas por clase.
+stem(data_pac1$Math_Score, scale = 1)
+```
+
+b) Calcule el percentil para un score <= 80 (1 punto).
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+#Calculamos la proporción de estudiantes con Math_Score <= 80
+
+#Creamos un vector lógico que marque TRUE para los estudiantes que en Math_Score <= 80. El resto son FALSE
+#Cuando aplicamos mean() a este vector lógico, R trata TRUE como 1 y FALSE como 0. Cuando multiplicamos el resultado de mean() * 100, nos da la proporción de TRUE.
+percentil_80 <- mean(data_pac1$Math_Score <= 80) * 100
+percentil_80
+
+```
+
+
+c) ¿Cuáles son los estudiantes que han tenido una nota de menos de 45 en matemáticas? Mostrar en la salida únicamente la variable Student_ID y Math_Score. (1 punto).
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+#Creamos un dataframe sólo con las columnas Student_ID y Math_Score. Aplicamos un filtro de < 45 en Math_Score
+subset(data_pac1, Math_Score < 45, select = c(Student_ID, Math_Score))
+
+```
+
+\newpage
+
+# Pregunta 3 (resolver con R). (3 puntos).
+
+En base al siguiente gráfico, contestad a las preguntas:
+
+**Para responder a esta pregunta, consulte el gráfico adjunto en el documento pdf del Canvas llamado PEC1.pdf**
+
+a) Obtenga la distribución de frecuencias absolutas y relativas de la variable *Age* del gráfico. (1.5 puntos)
+
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+#Datos del gráfico
+Age <- c(14, 15, 16, 17, 18)
+Frecuencia <- c(10, 10, 13, 7, 7)
+
+#Creamos la tabla con las frecuencias absolutas
+frec_abs <- data.frame(Age, Frecuencia)
+
+#Calculamos las proporciones para obtener las frecuencias relativas y los porcentajes
+frec_rel <- Frecuencia / sum(Frecuencia)
+frec_rel_pct <- round(frec_rel * 100, 2)
+
+#Unimos todo en una sola tabla
+tabla_frecuencias <- data.frame(Age, 
+                                Frecuencia, 
+                                Relativa = round(frec_rel, 3), 
+                                Porcentaje = frec_rel_pct)
+
+tabla_frecuencias
+
+```
+
+
+b) Utilizando el teorema de Chebychev (Tchebichev), determine el intervalo de la edad que aparece en el gráfico, de al menos el 75% de los estudiantes. (1.5 puntos).
+
+
+
+
+El Teorema de Chebychev nos dice que la proporción de valores que se encuentran dentro de $k$ desviaciones típicas ($s$) es al menos $1-\frac{1}{k^2}$. Lo primero que tenemos que hacer es igualar esa fórmula a 0.75 para encontrar el valor de $k$:
+$$
+1-\frac{1}{k^2}=0.75 \Rightarrow1 -\frac{1}{k^2}=\frac{3}{4} \Rightarrow \frac{1}{4}=\frac{1}{k^2} \Rightarrow 4=k^2 \Rightarrow k=2
+$$
+Ahora que sabemos que $k=2$, podemos decir que el intervalo que contiene al menos el 75% de los datos es:
+$$
+[\bar{X} - 2s,\; \bar{X} + 2s]
+$$
+Finalmente, calculamos cuanto vale $\bar{X}$ (media) y $s$ (desviación estándar) con R, y mostramos el intervalo:
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+#Calculamos media y desviación estándar
+media_age <- sum(Age * Frecuencia) / sum(Frecuencia)
+desv_age <- sqrt(sum(Frecuencia * (Age - media_age)^2) / sum(Frecuencia))
+
+#Intervalo de Chebychev para al menos el 75%
+k <- 2
+lim_inf <- media_age - k * desv_age
+lim_sup <- media_age + k * desv_age
+
+intervalo <- c(round(lim_inf, 2), round(lim_sup, 2))
+intervalo
+
+```
