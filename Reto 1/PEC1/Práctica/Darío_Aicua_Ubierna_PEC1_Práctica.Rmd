@@ -192,7 +192,8 @@ k <- 2
 lim_inf <- media_age - k * desv_age
 lim_sup <- media_age + k * desv_age
 
-intervalo <- c(round(lim_inf, 2), round(lim_sup, 2))
-intervalo
+cat("[",
+    formatC(lim_inf, format="f", digits=2), ", ",
+    formatC(lim_sup, format="f", digits=2), "]\n", sep = "")
 
 ```

@@ -581,9 +581,10 @@ k &lt;- 2
 lim_inf &lt;- media_age - k * desv_age
 lim_sup &lt;- media_age + k * desv_age
 
-intervalo &lt;- c(round(lim_inf, 2), round(lim_sup, 2))
-intervalo</code></pre>
-<pre><code>## [1] 13.15 18.47</code></pre>
+cat(&quot;[&quot;,
+    formatC(lim_inf, format=&quot;f&quot;, digits=2), &quot;, &quot;,
+    formatC(lim_sup, format=&quot;f&quot;, digits=2), &quot;]\n&quot;, sep = &quot;&quot;)</code></pre>
+<pre><code>## [13.15, 18.47]</code></pre>
 </div>
 
 
