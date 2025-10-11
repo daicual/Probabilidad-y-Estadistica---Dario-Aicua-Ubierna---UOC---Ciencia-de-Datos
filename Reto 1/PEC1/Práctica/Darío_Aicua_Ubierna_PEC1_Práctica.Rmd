@@ -117,7 +117,7 @@ b) Calcule el percentil para un score <= 80 (1 punto).
 #Creamos un vector lógico que marque TRUE para los estudiantes que en Math_Score <= 80. El resto son FALSE
 #Cuando aplicamos mean() a este vector lógico, R trata TRUE como 1 y FALSE como 0. Cuando multiplicamos el resultado de mean() * 100, nos da la proporción de TRUE.
 percentil_80 <- mean(data_pac1$Math_Score <= 80) * 100
-percentil_80
+formatC(percentil_80, format = "f", digits = 2)
 
 ```
 
