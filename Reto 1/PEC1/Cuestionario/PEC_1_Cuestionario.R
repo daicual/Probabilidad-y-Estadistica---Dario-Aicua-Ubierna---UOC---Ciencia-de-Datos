@@ -51,7 +51,7 @@ names(vendes4)
 
 #CUESTIONARIO
 #Pregunta 1:
-dat_preg_1 <- c(9,9,3,10,6,7,10,6,10)
+dat_preg_1 <- c(56,40,100,70,50,25,79)
 
 media   <- round(mean(dat_preg_1), 3)
 sd_pop  <- round(sqrt(mean((dat_preg_1 - mean(dat_preg_1))^2)), 3)  # desviación estándar poblacional
@@ -62,8 +62,8 @@ cat("x̄ =", formatC(media, format = "f", digits = 3),
    "\nm =", formatC(mediana, format = "f", digits = 3), "\n")
 
 # Pregunta 2
-ni <- c(10, 7, 9, 5)     # frecuencias
-xj <- c(88, 80, 102, 112) # valores medios o clases
+ni <- c(2,6,4,8)     # frecuencias
+xj <- c(86,97,92,119) # valores medios o clases
 
 datos_expand <- rep(xj, ni)
 datos_expand
@@ -93,13 +93,14 @@ cat("x̄ =", formatC(media, format = "f", digits = 3),
 
 #Pregunta 3:
 
-x <- c(4,6,17,2,19,3,20,4,12,18)
-quantile(x, probs = c(0.25, 0.5, 0.75), type = 6)  # método n+1
+x <- c(3,7,15,8,6,1,5,18,6,3,14,18)
+qs <- quantile(x, c(.25,.5,.75), type = 6)
+formatC(qs, format = "f", digits = 3)
 
 #Pregunta 4:
 # Datos
-xi <- c(3, 8, 11)
-ni <- c(2, 5, 6)
+xi <- c(2, 8, 13)
+ni <- c(2, 3, 4)
 
 # Muestra expandida
 datos <- rep(xi, ni)
@@ -116,8 +117,8 @@ cat("Q1 =", formatC(Q1, format="f", digits=3),
     "\nQ3 =", formatC(Q3, format="f", digits=3), "\n")
 
 #Pregunta 7 (5 y 6 eran teóricas):
-# Leemos el fichero vendes_pac1_P_15_3-1.csv
-vendes3 <- read.csv2("vendes_pac1_P_15_3-1.csv", na.strings = c("", "NA", "NaN"))
+# Leemos el fichero vendes_pac1_P_15_1-1.csv
+vendes3 <- read.csv2("vendes_pac1_P_15_1-1.csv", na.strings = c("", "NA", "NaN"))
 
 # Comprobamos las columnas disponibles
 names(vendes3)
@@ -133,18 +134,31 @@ hist(vendes3$PreuAm2,
      ylim = c(0, 30))   # <— fija el rango del eje Y de 0 a 30)
 
 #Pregunta 8:
-# Leemos el fichero vendes_pac1_P_15_1-1.csv
-vendes1 <- read.csv2("vendes_pac1_P_15_1-1.csv", na.strings = c("", "NA", "NaN"))
+# Leer el CSV (coma decimal y ; como separador)
+v4 <- read.csv2("vendes_pac1_P_15_4-1.csv", na.strings=c("", "NA"))
 
-# Comprobamos las columnas disponibles
-names(vendes1)
+# Resumen de la variable m2
+s <- summary(v4$m2)
+s1 <- round(s, 1)   # las opciones están con 1 decimal
+s1
 
-# Resumen de la variable PreuDm2
-summary(vendes1$PreuDm2)
+# Opciones del test (copiadas del enunciado)
+opt <- list(
+  a = c(Min.=102.0, `1st Qu.`=200.5, Median=286.0, Mean=290.9, `3rd Qu.`=386.5, Max.=496.0),
+  b = c(Min.=100.0, `1st Qu.`=208.5, Median=314.0, Mean=308.7, `3rd Qu.`=407.5, Max.=500.0),
+  c = c(Min.=106.0, `1st Qu.`=228.0, Median=316.0, Mean=302.1, `3rd Qu.`=389.0, Max.=496.0),
+  d = c(Min.=115.0, `1st Qu.`=217.0, Median=304.0, Mean=309.5, `3rd Qu.`=409.5, Max.=500.0)
+)
+
+# Comparar y decir cuál coincide
+dif <- sapply(opt, function(x) sum(abs(s1 - x[names(s1)])))
+dif
+names(which.min(dif))
+
 
 #Pregunta 9:
 # Leer el fichero con el formato correcto (coma decimal y ; como separador)
-vendes1 <- read.csv2("vendes_pac1_P_15_1-1.csv", na.strings = c("", "NA", "NaN"))
+vendes1 <- read.csv2("vendes_pac1_P_15_2-1.csv", na.strings = c("", "NA", "NaN"))
 
 # Comprobar las variables disponibles
 names(vendes1)
